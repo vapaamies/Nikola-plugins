@@ -132,7 +132,7 @@ def _get_hex_color(color):
     return '#' + ''.join('{:02x}'.format(int(round(c * 255))) for c in color)
 
 
-def create_tag_cloud_css(tag_cloud_name, level_weights, colors=((0.4, 0.4, 0.4), (1.0, 1.0, 1.0)), background_colors=((0.133, 0.133, 0.133), ), border_colors=((0.2, 0.2, 0.2), ), font_sizes=(6, 20), round_factor=0.6):
+def create_tag_cloud_css(tag_cloud_name, level_weights, colors=((0.4, 0.4, 0.4), (1.0, 1.0, 1.0)), background_colors=((0.133, 0.133, 0.133), ), border_colors=((0.2, 0.2, 0.2), ), font_sizes=(6, 20), round_factor=0.6, relative_font_size=False):
     """Create CSS for the tag cloud.
 
     ``tag_cloud_name`` is integrated in the CSS selectors and should
@@ -172,23 +172,29 @@ def create_tag_cloud_css(tag_cloud_name, level_weights, colors=((0.4, 0.4, 0.4),
         f = idx - idx1
         return tuple(a + (b - a) * f for (a, b) in zip(c1, c2))
 
-    result = '#' + tag_cloud_name + '{font-size:8px;text-align:center;vertical-align:middle;}'
-    result += '#' + tag_cloud_name + ' a{white-space:nowrap;padding:1px;'
+    def calc_size(pixels):
+        if relative_font_size:
+            return '.01em' if pixels == 1 else '{}em'.format(pixels / 10)
+        else:
+            return '{}px'.format(pixels)
+
+    result = '#' + tag_cloud_name + '{{font-size:{};text-align:center;vertical-align:middle;}}'.format(calc_size(8))
+    result += '#' + tag_cloud_name + ' a{{white-space:nowrap;padding:{};'.format(calc_size(2))
     if len(border_colors) == 1:
-        result += 'border:solid 1px {0};'.format(_get_hex_color(border_colors[0]))
+        result += 'border:solid {1} {0};'.format(_get_hex_color(border_colors[0]), calc_size(1))
     if len(background_colors) == 1:
         result += 'background-color:{0};'.format(_get_hex_color(background_colors[0]))
     result += '}'
     for index, level_weight in enumerate(level_weights):
         font_size = int(round(level_weight * (font_sizes[1] - font_sizes[0]) + font_sizes[0]))
         result += '#' + tag_cloud_name + ' a.' + tag_cloud_name + str(index) + '{'
-        result += 'font-size:{0}px;'.format(font_size)
+        result += 'font-size:{0};'.format(calc_size(font_size))
         if len(colors) > 1:
             result += 'color:{0} !important;'.format(_get_hex_color(get_color(level_weight, colors)))
         if len(border_colors) > 1:
-            result += 'border:solid 1px {0};'.format(_get_hex_color(get_color(level_weight, border_colors)))
+            result += 'border:solid {1} {0};'.format(_get_hex_color(get_color(level_weight, border_colors)), calc_size(1))
         if round_factor > 0:
-            result += 'border-radius:{0}px;margin:{0}px 0px;'.format(int(font_size * round_factor))
+            result += 'border-radius:{0};margin:{0} 0;'.format(calc_size(int(font_size * round_factor)))
         if len(background_colors) > 1:
             result += 'background-color:{0};'.format(_get_hex_color(get_color(level_weight, background_colors)))
         result += '}'

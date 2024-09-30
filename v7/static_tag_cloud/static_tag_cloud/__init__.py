@@ -112,7 +112,8 @@ class StaticTagCloud(Task):
                                           background_colors=config['background_colors'],
                                           border_colors=config['border_colors'],
                                           font_sizes=config['font_sizes'],
-                                          round_factor=config['round_factor'])
+                                          round_factor=config['round_factor'],
+                                          relative_font_size=self.site.config.get('STATIC_TAG_CLOUD_RELATIVE_FONT_SIZE'))
         with open(css_fn, "wb") as css_file:
             css_file.write(css.encode('utf-8'))
 
