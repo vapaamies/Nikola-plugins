@@ -183,7 +183,8 @@ def create_tag_cloud_css(tag_cloud_name, level_weights, colors=((0.4, 0.4, 0.4),
         font_size = int(round(level_weight * (font_sizes[1] - font_sizes[0]) + font_sizes[0]))
         result += '#' + tag_cloud_name + ' a.' + tag_cloud_name + str(index) + '{'
         result += 'font-size:{0}px;'.format(font_size)
-        result += 'color:{0} !important;'.format(_get_hex_color(get_color(level_weight, colors)))
+        if len(colors) > 1:
+            result += 'color:{0} !important;'.format(_get_hex_color(get_color(level_weight, colors)))
         if len(border_colors) > 1:
             result += 'border:solid 1px {0};'.format(_get_hex_color(get_color(level_weight, border_colors)))
         if round_factor > 0:
