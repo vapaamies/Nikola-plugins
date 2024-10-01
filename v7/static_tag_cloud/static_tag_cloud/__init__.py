@@ -95,6 +95,7 @@ class StaticTagCloud(Task):
         doc = lxml.html.fragment_fromstring(html, parser)
         self.site.rewrite_links(doc, src, lang, url_type)
         html = (doc.text or '').encode('utf-8') + b''.join([lxml.html.tostring(child, encoding='utf-8', method='html') for child in doc.iterchildren()])
+        html = b'<head><meta charset="utf-8"></head><body>' + html + b'<body>'
         # Write result to disk
         with open(fn, "wb") as html_file:
             html_file.write(html)
