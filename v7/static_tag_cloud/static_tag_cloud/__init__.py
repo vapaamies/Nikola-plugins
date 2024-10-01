@@ -95,7 +95,10 @@ class StaticTagCloud(Task):
         doc = lxml.html.fragment_fromstring(html, parser)
         self.site.rewrite_links(doc, src, lang, url_type)
         html = (doc.text or '').encode('utf-8') + b''.join([lxml.html.tostring(child, encoding='utf-8', method='html') for child in doc.iterchildren()])
-        html = b'<head><meta charset="utf-8"></head><body>' + html + b'<body>'
+        html = b'<head><meta charset="utf-8"></head><body>' + html + b'</body>'
+        if self.site.config.get('STATIC_TAG_CLOUD_INSERT_CSS'):
+            src = '<link href="/{}" rel="stylesheet" type="text/css">'.format(config['style_filename'])
+            html = html.replace(b'</head>', src.encode('utf-8') + b'</head>')
         # Write result to disk
         with open(fn, "wb") as html_file:
             html_file.write(html)
