@@ -129,6 +129,8 @@ class StaticTagCloud(Task):
         # Compose list of tags, their post count and links
         tag_count_url_list = []
         for tag in natsort.humansorted(list(posts_per_tag.keys())):
+            if tag in self.site.config['HIDDEN_TAGS']:
+                continue
             tag_count_url_list.append((
                 taxonomy.get_classification_friendly_name(tag, lang),
                 len([post for post in posts_per_tag[tag] if self.site.config['SHOW_UNTRANSLATED_POSTS'] or post.is_translation_available(lang)]),
